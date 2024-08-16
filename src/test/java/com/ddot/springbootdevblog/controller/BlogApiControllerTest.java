@@ -35,6 +35,8 @@ class BlogApiControllerTest {
     @Autowired
     protected MockMvc mockMvc;
 
+    // 직렬화, 역 직렬화
+    // Jackson lib
     @Autowired
     protected ObjectMapper objectMapper;
 
@@ -55,6 +57,7 @@ class BlogApiControllerTest {
     @Test
     public void addArticle() throws Exception {
         // given
+        // 블로그 글 추가에 필요한 요청 객체 생성
         final String url = "/api/articles";
         final String title = "title";
         final String content = "content";
@@ -65,21 +68,27 @@ class BlogApiControllerTest {
         final String requestBody = objectMapper.writeValueAsString(userRequest);
 
         // when
-        // 설정한 내용을 바탕으로 요청 전송
+        // 설정한 내용을 바탕으로 블로그 글추가 API에 요청 전송
+        // 요청 타입 : JSON ; given 절에서 생성한 객체를 요청의 본문으로 첨부
         // mockMvc  : HTTP 메서드, URL, 요청 본문, 요청 타입 등 설정, 설정 바탕으로 테스트 요청
         // contentType  : 요청 시 JSON, XML 등의 타입 중 골라 요청
         ResultActions result = mockMvc.perform(post(url)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(requestBody));
 
-        //then
+        // then
+        // 응답 코드가 201 Created인지 확인
+        // 블로그 전체를 조회해 크기가 1인지 확인
+        // 실제 저장된 데이터와 요청 값 비교
         result.andExpect(status().isCreated());
 
         List<Article> articles = blogRepository.findAll();
 
-        //크기가 1
+        // 크기가 1
         assertThat(articles.size()).isEqualTo(1);
+        // 배열의 0번 객체의 title 값이 title 인가?
         assertThat(articles.get(0).getTitle()).isEqualTo(title);
+        // 배열의 0번 객체의 content 값이 content 인가?
         assertThat(articles.get(0).getContent()).isEqualTo(content);
     }
 
@@ -104,5 +113,33 @@ class BlogApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].content").value(content))
                 .andExpect(jsonPath("$[0].title").value(title));
+    }
+
+    @DisplayName("findArticle: 블로그 글 조회 성공")
+    @Test
+    public void findArticle() throws Exception {
+        // given
+        // 블로그 글 저장
+        final String url = "/api/articles/{id}";
+        final String title = "title";
+        final String content = "content";
+
+        Article savedArticle = blogRepository.save(Article.builder()
+                .title(title)
+                .content(content)
+                .build());
+
+        // when
+        // 목록 조회 API 호출
+        final ResultActions resultActions =
+                mockMvc.perform(get(url, savedArticle.getId()));
+
+        // then
+        // 응답 코드 200 OK, 반환 객체의 0번째 객체의 content, title이 저장된 값과 같은지 확인
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value(content))
+                .andExpect(jsonPath("$.title").value(title));
+
     }
 }
