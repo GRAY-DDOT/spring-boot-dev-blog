@@ -31,6 +31,11 @@ public class Article {
         this.content = content;
     }
 
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
 
 
 /*  Getter 직접 생성

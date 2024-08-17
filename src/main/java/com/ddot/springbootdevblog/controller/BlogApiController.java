@@ -3,6 +3,7 @@ package com.ddot.springbootdevblog.controller;
 import com.ddot.springbootdevblog.domain.Article;
 import com.ddot.springbootdevblog.dto.AddArticleRequest;
 import com.ddot.springbootdevblog.dto.ArticleResponse;
+import com.ddot.springbootdevblog.dto.UpdateArticleRequest;
 import com.ddot.springbootdevblog.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,15 @@ public class BlogApiController {
 
         return ResponseEntity.ok()
                 .build();
+    }
+
+    @PutMapping("/api/articles/{id}")
+    public ResponseEntity<Article> updateArticle(@PathVariable long id,
+                                                 @RequestBody UpdateArticleRequest request) {
+        Article updatedArticle = blogService.update(id, request);
+
+        return ResponseEntity.ok()
+                .body(updatedArticle);
     }
 
 
