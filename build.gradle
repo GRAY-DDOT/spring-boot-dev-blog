@@ -35,6 +35,15 @@ dependencies {
 
     //testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    //Spring Security 스타터
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    //Thymeleaf에서 Spring Security 사용하기 위한 의존성
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    //test 의존성
+    testImplementation 'org.springframework.security:spring-security-test'
+
+
 }
 
 test {
